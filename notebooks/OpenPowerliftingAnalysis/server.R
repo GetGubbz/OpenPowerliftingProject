@@ -69,11 +69,14 @@ function(input, output, session) {
       
     output$weight_model_mens <- renderPlot({
       
-      mens_weight_model <- lm(`Winner/Loser` ~ log(BodyweightKg), data =mens_USAPL)
+      new_data <- mens_USAPL |> 
+        filter(WeightClassKg == input$mens_weight_class)
       
-      mens_USAPL$fitted_values <- predict(mens_weight_model)
+      mens_weight_model <- glm(`Winner/Loser` ~ BodyweightKg, family=binomial, data =new_data)
       
-      ggplot(mens_USAPL, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
+      new_data$fitted_values <- predict(mens_weight_model, type='response', newdata=new_data)
+      
+      ggplot(new_data, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
         geom_line(aes(y=fitted_values), color='blue') + 
         labs(title = paste('Probability of winning in the ', input$mens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
         
@@ -113,5 +116,20 @@ function(input, output, session) {
     
     output$womens_slider <- renderText({
       paste("Select Your Weight (kg)", input$womens_weight_class)
+    })
+    
+    output$weight_model_womens <- renderPlot({
+      
+      womens_new_data <- womens_USAPL |> 
+        filter(WeightClassKg == input$womens_weight_class)
+      
+      womens_weight_model <- glm(`Winner/Loser` ~ BodyweightKg, family=binomial, data =womens_new_data)
+      
+      womens_new_data$fitted_values <- predict(womens_weight_model, type='response', newdata=womens_new_data)
+      
+      ggplot(womens_new_data, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
+        geom_line(aes(y=fitted_values), color='blue') + 
+        labs(title = paste('Probability of winning in the ', input$womens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
+      
     })
 }

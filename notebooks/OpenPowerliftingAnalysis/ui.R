@@ -105,7 +105,7 @@ navbarPage(
              
              mainPanel(
                textOutput('womens_slider'),
-               plotOutput('weight_chart_womens')
+               plotOutput('weight_model_womens')
                   )
       )
     )
