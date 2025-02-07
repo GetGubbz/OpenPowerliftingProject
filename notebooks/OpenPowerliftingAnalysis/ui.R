@@ -69,18 +69,37 @@ navbarPage(
                   )
              ),
              
-             titlePanel('Mens USAPL Data'),
+             titlePanel('Mens Raw Powerlifting Data'),
              
              sidebarPanel(
                selectInput('mens_weight_class',
                            'Select Weight Class',
                            choices = mens_weight_classes),
+               selectInput('mens_age_class',
+                           'Select Age Class',
+                           choices = mens_USAPL |> 
+                             distinct(Division) |> 
+                             pull(Division)
+                           ),
                sliderInput('mens_weight_range',
                            'Select Your Weight (kg):',
                            min=20,
                            max=200,
-                           value=20)
+                           value=20),
+               textInput('age',
+                         'Input Age: ',
+                         value=0),
+               textInput('Squat',
+                         'Input Best Squat Attempt (kg): ',
+                         value=0),
+               textInput('Bench',
+                         'Input Best Bench Attempt (kg): ',
+                         value=0),
+               textInput('Deadlift',
+                         'Input Best Deadlift Attempt (kg): ',
+                         value=0)
                            ),
+              
              
              mainPanel(
                textOutput('mens_slider'),
@@ -90,26 +109,44 @@ navbarPage(
   ),
   tabPanel('Womens Data',
            fluidPage(
-             titlePanel('Womens USAPL Data'),
+             titlePanel('Womens Raw Powerlifting Data'),
              
              sidebarPanel(
                selectInput('womens_weight_class',
                            'Select Weight Class',
                            choices = womens_weight_classes),
+               selectInput('womens_age_class',
+                           'Select Age Class',
+                           choices = womens_USAPL |> 
+                             distinct(Division) |> 
+                             pull(Division)
+               ),
                sliderInput('womens_weight_range',
                            'Select Your Weight (kg):',
                            min=20,
                            max=200,
-                           value=20)
-                        ),
+                           value=20),
+               textInput('age',
+                         'Input Age: ',
+                         value=0),
+               textInput('Squat',
+                         'Input Best Squat Attempt (kg): ',
+                         value=0),
+               textInput('Bench',
+                         'Input Best Bench Attempt (kg): ',
+                         value=0),
+               textInput('Deadlift',
+                         'Input Best Deadlift Attempt (kg): ',
+                         value=0)
+             ),
              
              mainPanel(
                textOutput('womens_slider'),
                plotOutput('weight_model_womens')
                   )
+           )
       )
     )
   )
-)
   
 

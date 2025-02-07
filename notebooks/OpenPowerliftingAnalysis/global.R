@@ -13,6 +13,7 @@ library(DT)
 library(shinydashboard)
 library(arrow)
 library(leaflet)
+library(plotly)
 
 
 #rsconnect::setAccountInfo(name='gubbz', token='52AD7AC7D8F48E11903208D7840EB69B', secret='rQVa/Gx7PLy+qtJDvCOk5jmLxjuLkXcjL5qofhiU')
@@ -20,7 +21,8 @@ library(leaflet)
 
 mens_USAPL <- read_parquet('../../data/raw_mens_USAPL.parquet')
 womens_USAPL <- read_parquet('../../data/raw_womens_USAPL.parquet')
-all_data <- read_parquet('../../data/open_powerlifting_full.parquet')
+all_mens_data <- read_parquet('../../data/mens_open_powerlifting_full.parquet')
+all_womens_data <- read_parquet('../../data/womens_open_powerlifting_full.parquet')
 
 mens_weight_classes <- c(52, 56, 60, 67.5, 75, 82.5, 90, 100, 110, 125, 140, '140+')
 womens_weight_classes <- c(44, 48, 52, 56, 60, 65, 70, 75, 82.5, 90, 100, '100+')

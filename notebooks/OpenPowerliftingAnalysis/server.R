@@ -69,8 +69,9 @@ function(input, output, session) {
       
     output$weight_model_mens <- renderPlot({
       
-      new_data <- mens_USAPL |> 
-        filter(WeightClassKg == input$mens_weight_class)
+      new_data <- all_mens_data |> 
+        filter(WeightClassKg == input$mens_weight_class &
+                 Division == input$mens_age_class)
       
       mens_weight_model <- glm(`Winner/Loser` ~ BodyweightKg, family=binomial, data =new_data)
       
@@ -78,6 +79,7 @@ function(input, output, session) {
       
       ggplot(new_data, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
         geom_line(aes(y=fitted_values), color='blue') + 
+        scale_y_continuous("probability of passing", expand = c(0, 0), limits = 0:1) +
         labs(title = paste('Probability of winning in the ', input$mens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
         
     })
@@ -120,8 +122,9 @@ function(input, output, session) {
     
     output$weight_model_womens <- renderPlot({
       
-      womens_new_data <- womens_USAPL |> 
-        filter(WeightClassKg == input$womens_weight_class)
+      womens_new_data <- all_womens_data |> 
+        filter(WeightClassKg == input$womens_weight_class &
+                 Division == input$womens_age_class)
       
       womens_weight_model <- glm(`Winner/Loser` ~ BodyweightKg, family=binomial, data =womens_new_data)
       
@@ -129,6 +132,7 @@ function(input, output, session) {
       
       ggplot(womens_new_data, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
         geom_line(aes(y=fitted_values), color='blue') + 
+        scale_y_continuous("probability of passing", expand = c(0, 0), limits = 0:1) +
         labs(title = paste('Probability of winning in the ', input$womens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
       
     })
