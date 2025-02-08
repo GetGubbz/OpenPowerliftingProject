@@ -55,7 +55,9 @@ navbarPage(
            fluidPage(
              titlePanel('Map of World Powerlifting Statistics (Raw and Equipped)'),
              
-             leaflet::leafletOutput('world_map', width = '100%' , height = '100%'),
+             plotlyOutput('world_map')
+             
+             #leaflet::leafletOutput('world_map', width = '100%' , height = '100%'),
              
     )
   ),
@@ -102,6 +104,7 @@ navbarPage(
               
              
              mainPanel(
+               textOutput('dots'),
                textOutput('mens_slider'),
                plotOutput('weight_model_mens')
              )

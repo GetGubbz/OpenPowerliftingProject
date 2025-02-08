@@ -19,16 +19,19 @@ function(input, output, session) {
       probability of winning a meet based on bodyweight. These models used USAPL
       data in particular so as to standardize variables like bar type and rule type. 
       This may not apply to equipped lifting."
+      
+      "All data is provided by the Open Powerlifting Team over at https://www.openpowerlifting.org/ where you can access all of the data for free"
     })
     
 #----- World Map Page ----------------------------------------------------------
     
-    output$world_map <- leaflet::renderLeaflet({ 
-      leaflet() |> 
-        addTiles() |> 
-        setView(lng = 0, lat = 0, zoom = 2) 
+    output$world_map <- renderPlotly({
+      fig <- plot_ly(all_mens_data, type='choropleth', locations=all_mens_data$MeetCountry, z=all_mens_data$TotalKg, text=all_mens_data$Country, colorscale="Blues")
+      
+      fig
+      
     })
-
+    
 #----- Mens Page ---------------------------------------------------------------
     
     observe({
@@ -61,11 +64,23 @@ function(input, output, session) {
       }
       })
     
-    
     output$mens_slider <- renderText({
       paste("Select Your Weight (kg)", input$mens_weight_class)
     })
     
+    output$dots <- renderText({
+      
+      
+      dots_mens_coef <- 500/(0.00003993 + 
+                          (-0.00002213)^(0.0251 * as.numeric(input$mens_weight_range))
+                        )
+      
+      print(as.numeric(input$mens_weight_range))
+
+      mens_dots <- (as.numeric(input$Squat) + as.numeric(input$Bench) + as.numeric(input$Deadlift))/(dots_mens_coef)
+      
+      paste(mens_dots)
+    })
       
     output$weight_model_mens <- renderPlot({
       
@@ -75,12 +90,29 @@ function(input, output, session) {
       
       mens_weight_model <- glm(`Winner/Loser` ~ BodyweightKg, family=binomial, data =new_data)
       
-      new_data$fitted_values <- predict(mens_weight_model, type='response', newdata=new_data)
       
-      ggplot(new_data, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
-        geom_line(aes(y=fitted_values), color='blue') + 
-        scale_y_continuous("probability of passing", expand = c(0, 0), limits = 0:1) +
+      
+      p <- predict(mens_weight_model,
+                   newdata= new_data,
+                   type = "link",
+                   se.fit = TRUE) |> 
+        data.frame() |> 
+        mutate(ll = fit - 1.96 * se.fit,
+               ul = fit + 1.96 * se.fit) |> 
+        select(-residual.scale, -se.fit) |> 
+        mutate_all(plogis) |> 
+        bind_cols(new_data)
+      
+      p |> 
+        ggplot(aes(x = BodyweightKg, y = fit)) +
+        geom_ribbon(aes(ymin = ll, ymax = ul),
+                    alpha = 1/2) +
+        geom_line() +
+        scale_y_continuous("probability of winning", 
+                           expand = c(0, 0), limits = 0:1) +
+        theme(panel.grid = element_blank())+
         labs(title = paste('Probability of winning in the ', input$mens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
+        
         
     })
     
@@ -128,12 +160,27 @@ function(input, output, session) {
       
       womens_weight_model <- glm(`Winner/Loser` ~ BodyweightKg, family=binomial, data =womens_new_data)
       
-      womens_new_data$fitted_values <- predict(womens_weight_model, type='response', newdata=womens_new_data)
+      p <- predict(womens_weight_model,
+                   newdata= womens_new_data,
+                   type = "link",
+                   se.fit = TRUE) |> 
+        data.frame() |> 
+        mutate(ll = fit - 1.96 * se.fit,
+               ul = fit + 1.96 * se.fit) |> 
+        select(-residual.scale, -se.fit) |> 
+        mutate_all(plogis) |> 
+        bind_cols(womens_new_data)
       
-      ggplot(womens_new_data, aes(x=`BodyweightKg`, y=`Winner/Loser`)) + 
-        geom_line(aes(y=fitted_values), color='blue') + 
-        scale_y_continuous("probability of passing", expand = c(0, 0), limits = 0:1) +
+      p |> 
+        ggplot(aes(x = BodyweightKg, y = fit)) +
+        geom_ribbon(aes(ymin = ll, ymax = ul),
+                    alpha = 1/2) +
+        geom_line() +
+        scale_y_continuous("probability of winning", 
+                           expand = c(0, 0), limits = 0:1) +
+        theme(panel.grid = element_blank())+
         labs(title = paste('Probability of winning in the ', input$womens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
+      
       
     })
 }
