@@ -14,7 +14,7 @@ fluidPage(
   tags$head(
     tags$style(HTML("
       .navbar {
-        background-color: #B22222;
+        background-c olor: #B22222;
       }
       .navbar-nav > li > a {
         color: white;
@@ -53,9 +53,10 @@ navbarPage(
     ),
   tabPanel('World Map',
            fluidPage(
-             titlePanel('Map of World Powerlifting Statistics (Raw and Equipped)'),
+             titlePanel('Maps of World Powerlifting Totals (Raw and Equipped)'),
              
-             plotlyOutput('world_map')
+             plotlyOutput('world_map'),
+             plotlyOutput('world_map_womens')
              
              #leaflet::leafletOutput('world_map', width = '100%' , height = '100%'),
              
@@ -88,9 +89,6 @@ navbarPage(
                            min=20,
                            max=200,
                            value=20),
-               textInput('age',
-                         'Input Age: ',
-                         value=0),
                textInput('Squat',
                          'Input Best Squat Attempt (kg): ',
                          value=0),
@@ -104,7 +102,8 @@ navbarPage(
               
              
              mainPanel(
-               textOutput('dots'),
+               textOutput('mens_dots_message'),
+               textOutput('mens_dots'),
                textOutput('mens_slider'),
                plotOutput('weight_model_mens')
              )
@@ -129,21 +128,20 @@ navbarPage(
                            min=20,
                            max=200,
                            value=20),
-               textInput('age',
-                         'Input Age: ',
-                         value=0),
-               textInput('Squat',
+               textInput('womens_Squat',
                          'Input Best Squat Attempt (kg): ',
                          value=0),
-               textInput('Bench',
+               textInput('womens_Bench',
                          'Input Best Bench Attempt (kg): ',
                          value=0),
-               textInput('Deadlift',
+               textInput('womens_Deadlift',
                          'Input Best Deadlift Attempt (kg): ',
                          value=0)
              ),
              
              mainPanel(
+               textOutput('womens_dots_message'),
+               textOutput('womens_dots'),
                textOutput('womens_slider'),
                plotOutput('weight_model_womens')
                   )

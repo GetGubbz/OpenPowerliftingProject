@@ -15,18 +15,58 @@ function(input, output, session) {
     output$welcome <- renderText({
       "Welcome to an Open Powerlifting inspired app! Here you can view self 
       submitted data from individuals competing in all kinds of federations of 
-      powerlifting. There are also bodyweight calculators available to see the 
-      probability of winning a meet based on bodyweight. These models used USAPL
-      data in particular so as to standardize variables like bar type and rule type. 
-      This may not apply to equipped lifting."
-      
-      "All data is provided by the Open Powerlifting Team over at https://www.openpowerlifting.org/ where you can access all of the data for free"
+      powerlifting. All data is provided by the Open Powerlifting Team over at 
+      https://www.openpowerlifting.org/ where you can access all of the data for free"
     })
     
 #----- World Map Page ----------------------------------------------------------
     
     output$world_map <- renderPlotly({
-      fig <- plot_ly(all_mens_data, type='choropleth', locations=all_mens_data$MeetCountry, z=all_mens_data$TotalKg, text=all_mens_data$Country, colorscale="Blues")
+      
+      df_country_codes <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv")
+      
+      df_country_codes <- df_country_codes |> 
+        rename(Country = COUNTRY)
+      
+      all_mens_data <- all_mens_data |> 
+        mutate(MeetCountry = ifelse(MeetCountry == 'USA', 'United States', MeetCountry))
+      
+      merged_df <- inner_join(df_country_codes, all_mens_data)
+      
+      df <- merged_df |> 
+        group_by(CODE) |> 
+        summarize(Sum_winner_loser = sum(`Winner/Loser`), max_total = max(TotalKg))
+      
+      
+      fig <- plot_ly(df, type='choropleth', locations=df$CODE, z=df$max_total, text=df$CODE, colorscale="Blues")
+      
+      fig <- fig %>% layout(title = "Mens Global Max Totals")
+      
+      
+      fig
+      
+    })
+    
+    output$world_map_womens <- renderPlotly({
+      
+      df_country_codes <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv")
+      
+      df_country_codes <- df_country_codes |> 
+        rename(Country = COUNTRY)
+      
+      all_womens_data <- all_womens_data |> 
+        mutate(MeetCountry = ifelse(MeetCountry == 'USA', 'United States', MeetCountry))
+      
+      merged_df <- inner_join(df_country_codes, all_womens_data)
+      
+      df <- merged_df |> 
+        group_by(CODE) |> 
+        summarize(Sum_winner_loser = sum(`Winner/Loser`), max_total = max(TotalKg))
+      
+      
+      fig <- plot_ly(df, type='choropleth', locations=df$CODE, z=df$max_total, text=df$CODE, colorscale="Pinks")
+      
+      fig <- fig %>% layout(title = "Womens Global Max Totals")
       
       fig
       
@@ -68,18 +108,19 @@ function(input, output, session) {
       paste("Select Your Weight (kg)", input$mens_weight_class)
     })
     
-    output$dots <- renderText({
+    output$mens_dots_message <- renderText({
+      paste("Your DOTS Score: ")
+    })
+    
+    output$mens_dots <- renderText({
       
-      
-      dots_mens_coef <- 500/(0.00003993 + 
-                          (-0.00002213)^(0.0251 * as.numeric(input$mens_weight_range))
-                        )
-      
-      print(as.numeric(input$mens_weight_range))
+      dots_mens_coef <- 500/(307.75076  + 
+                           24.0900756 *input$mens_weight_range + 
+                           0.1918759221*input$mens_weight_range^2 + 
+                           0.0007391293 *input$mens_weight_range^3 + 
+                           0.000001093*input$mens_weight_range^4)
 
       mens_dots <- (as.numeric(input$Squat) + as.numeric(input$Bench) + as.numeric(input$Deadlift))/(dots_mens_coef)
-      
-      paste(mens_dots)
     })
       
     output$weight_model_mens <- renderPlot({
@@ -154,6 +195,7 @@ function(input, output, session) {
     
     output$weight_model_womens <- renderPlot({
       
+      
       womens_new_data <- all_womens_data |> 
         filter(WeightClassKg == input$womens_weight_class &
                  Division == input$womens_age_class)
@@ -182,5 +224,19 @@ function(input, output, session) {
         labs(title = paste('Probability of winning in the ', input$womens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
       
       
+    })
+    output$womens_dots_message <- renderText({
+      paste("Your DOTS Score: ")
+    })
+    
+    output$womens_dots <- renderText({
+      
+      dots_womens_coef <- 500/(-57.96288  + 
+                               13.6175032 *input$womens_weight_range + 
+                               -0.1126655495*input$womens_weight_range^2 + 
+                               0.0005158568  *input$womens_weight_range^3 + 
+                               -0.0000010706 *input$womens_weight_range^4)
+      
+      womens_dots <- (as.numeric(input$womens_Squat) + as.numeric(input$womens_Bench) + as.numeric(input$womens_Deadlift))/(dots_womens_coef)
     })
 }
