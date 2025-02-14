@@ -31,16 +31,17 @@ function(input, output, session) {
       all_mens_data <- all_mens_data |> 
         mutate(MeetCountry = ifelse(MeetCountry == 'USA', 'United States', MeetCountry))
       
+      
       merged_df <- inner_join(df_country_codes, all_mens_data)
       
       df <- merged_df |> 
         group_by(CODE) |> 
-        summarize(Sum_winner_loser = sum(`Winner/Loser`), max_total = max(TotalKg))
+        summarize(Sum_winner_loser = sum(`Winner/Loser`), max_total = max(TotalKg), max_dots = max(Dots))
       
       
-      fig <- plot_ly(df, type='choropleth', locations=df$CODE, z=df$max_total, text=df$CODE, colorscale="Blues")
+      fig <- plot_ly(df, type='choropleth', locations=df$CODE, z=df$max_dots, text=df$CODE, colorscale="Blues")
       
-      fig <- fig %>% layout(title = "Mens Global Max Totals")
+      fig <- fig %>% layout(title = "Mens Max DOTS")
       
       
       fig
@@ -61,12 +62,12 @@ function(input, output, session) {
       
       df <- merged_df |> 
         group_by(CODE) |> 
-        summarize(Sum_winner_loser = sum(`Winner/Loser`), max_total = max(TotalKg))
+        summarize(Sum_winner_loser = sum(`Winner/Loser`), max_total = max(TotalKg), max_dots = max(Dots))
       
       
-      fig <- plot_ly(df, type='choropleth', locations=df$CODE, z=df$max_total, text=df$CODE, colorscale="Pinks")
+      fig <- plot_ly(df, type='choropleth', locations=df$CODE, z=df$max_dots, text=df$CODE, colorscale="Pinks")
       
-      fig <- fig %>% layout(title = "Womens Global Max Totals")
+      fig <- fig %>% layout(title = "Womens Max DOTS")
       
       fig
       
@@ -114,13 +115,13 @@ function(input, output, session) {
     
     output$mens_dots <- renderText({
       
-      dots_mens_coef <- 500/(307.75076  + 
+      dots_mens_coef <- 500/(-307.75076  + 
                            24.0900756 *input$mens_weight_range + 
-                           0.1918759221*input$mens_weight_range^2 + 
-                           0.0007391293 *input$mens_weight_range^3 + 
-                           0.000001093*input$mens_weight_range^4)
+                           -0.1918759221*(input$mens_weight_range^2) + 
+                           0.0007391293 * (input$mens_weight_range^3) + 
+                           -0.000001093*(input$mens_weight_range^4))
 
-      mens_dots <- (as.numeric(input$Squat) + as.numeric(input$Bench) + as.numeric(input$Deadlift))/(dots_mens_coef)
+      mens_dots <- (as.numeric(input$Squat) + as.numeric(input$Bench) + as.numeric(input$Deadlift))*(dots_mens_coef)
     })
       
     output$weight_model_mens <- renderPlot({

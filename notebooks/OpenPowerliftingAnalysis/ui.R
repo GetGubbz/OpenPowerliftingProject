@@ -12,17 +12,7 @@ library(shiny)
 # Define UI for application that draws a histogram
 fluidPage(
   tags$head(
-    tags$style(HTML("
-      .navbar {
-        background-c olor: #B22222;
-      }
-      .navbar-nav > li > a {
-        color: white;
-      }
-      .navbar-nav > li > a:hover {
-        color: #1C1C1C;
-      }
-    "))
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
   ),
 
 
@@ -34,15 +24,6 @@ navbarPage(
     # Sidebar with a slider input for number of bins
     tabPanel('Home',
              fluidPage(
-               tags$style(
-               HTML("body {
-                        background-color: #1C1C1C;
-                        color: #FFFFFF;
-                      }
-                      .btn-primary {
-                        background-color: #ff6347;
-                      }
-                    ")),
                titlePanel("Open Powerlifting Data Analysis"),
         ),
 
@@ -53,30 +34,21 @@ navbarPage(
     ),
   tabPanel('World Map',
            fluidPage(
-             titlePanel('Maps of World Powerlifting Totals (Raw and Equipped)'),
+             titlePanel('Maps of Max DOTS Scores per Country'),
              
              plotlyOutput('world_map'),
              plotlyOutput('world_map_womens')
-             
-             #leaflet::leafletOutput('world_map', width = '100%' , height = '100%'),
              
     )
   ),
   tabPanel('Mens Data',
            fluidPage(
-             tags$style(
-             HTML("
-              .custom-input {
-                color: #1C1C1C;
-              }"
-                  )
-             ),
              
              titlePanel('Mens Raw Powerlifting Data'),
              
              sidebarPanel(
                selectInput('mens_weight_class',
-                           'Select Weight Class',
+                           'Select Weight Class (kg)',
                            choices = mens_weight_classes),
                selectInput('mens_age_class',
                            'Select Age Class',
@@ -102,10 +74,16 @@ navbarPage(
               
              
              mainPanel(
+               wellPanel(
+                 h3('DOTS Calculator'),
                textOutput('mens_dots_message'),
-               textOutput('mens_dots'),
+               textOutput('mens_dots')
+             ),
+             wellPanel(
+               h3('Probability Plot of Winning Selected Weight Division'),
                textOutput('mens_slider'),
                plotOutput('weight_model_mens')
+             )
              )
     )
   ),
@@ -115,7 +93,7 @@ navbarPage(
              
              sidebarPanel(
                selectInput('womens_weight_class',
-                           'Select Weight Class',
+                           'Select Weight Class (kg)',
                            choices = womens_weight_classes),
                selectInput('womens_age_class',
                            'Select Age Class',
@@ -140,8 +118,13 @@ navbarPage(
              ),
              
              mainPanel(
+               wellPanel(
+                 h3('DOTS Calculator'),
                textOutput('womens_dots_message'),
-               textOutput('womens_dots'),
+               textOutput('womens_dots')
+               ),
+               wellPanel(
+                 h3('Probability Plot of Winning Selected Weight Division'),
                textOutput('womens_slider'),
                plotOutput('weight_model_womens')
                   )
@@ -149,5 +132,6 @@ navbarPage(
       )
     )
   )
+)
   
 
