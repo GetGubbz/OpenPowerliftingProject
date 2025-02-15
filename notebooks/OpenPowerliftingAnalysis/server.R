@@ -105,9 +105,9 @@ function(input, output, session) {
       }
       })
     
-    output$mens_slider <- renderText({
-      paste("Select Your Weight (kg)", input$mens_weight_class)
-    })
+    #output$mens_slider <- renderText({
+     # paste("Select Your Weight (kg)", input$mens_weight_class)
+    #})
     
     output$mens_dots_message <- renderText({
       paste("Your DOTS Score: ")
@@ -153,7 +153,7 @@ function(input, output, session) {
         scale_y_continuous("probability of winning", 
                            expand = c(0, 0), limits = 0:1) +
         theme(panel.grid = element_blank())+
-        labs(title = paste('Probability of winning in the ', input$mens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
+        labs(x='Weight (kg)', y='Probability of Winning')
         
         
     })
@@ -190,9 +190,9 @@ function(input, output, session) {
       }
     })
     
-    output$womens_slider <- renderText({
-      paste("Select Your Weight (kg)", input$womens_weight_class)
-    })
+    #output$womens_slider <- renderText({
+     # paste("Select Your Weight (kg)", input$womens_weight_class)
+    #})
     
     output$weight_model_womens <- renderPlot({
       
@@ -222,7 +222,7 @@ function(input, output, session) {
         scale_y_continuous("probability of winning", 
                            expand = c(0, 0), limits = 0:1) +
         theme(panel.grid = element_blank())+
-        labs(title = paste('Probability of winning in the ', input$womens_weight_class, ' class'), x='Weight (kg)', y='Probability of Winning')
+        labs( x='Weight (kg)', y='Probability of Winning')
       
       
     })

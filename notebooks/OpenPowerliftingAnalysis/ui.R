@@ -1,18 +1,30 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    https://shiny.posit.co/
-#
+
 
 library(shiny)
 
 # Define UI for application that draws a histogram
 fluidPage(
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+    tags$style(HTML("
+      body {
+        background-color: #ffffff; /* Background color */
+      }
+      .navbar {
+        background-color: #d32f2f; /* Navbar background color */
+      }
+      .navbar .navbar-nav > li > a {
+        color: white !important; /* Navbar text color */
+      }
+      .navbar .navbar-brand {
+        color: #ffffff !important; /* White color for navbar title */
+      }
+      h1 {
+        color: #ffffff; /* Change color of h1 text */
+      }
+      p {
+        color: #ffffff; /* Change color of paragraphs */
+      }
+    "))
   ),
 
 
@@ -80,7 +92,7 @@ navbarPage(
                textOutput('mens_dots')
              ),
              wellPanel(
-               h3('Probability Plot of Winning Selected Weight Division'),
+               h3('Probability Plot of Winning Selected Age Division'),
                textOutput('mens_slider'),
                plotOutput('weight_model_mens')
              )
@@ -124,7 +136,7 @@ navbarPage(
                textOutput('womens_dots')
                ),
                wellPanel(
-                 h3('Probability Plot of Winning Selected Weight Division'),
+                 h3('Probability Plot of Winning Selected Age Division'),
                textOutput('womens_slider'),
                plotOutput('weight_model_womens')
                   )

@@ -3,20 +3,17 @@
 #install.packages('rsconnect')
 #install.packages("shinythemes")
 #install.packages('leaflet')
-#library(rsconnect)
+
+library(rsconnect)
 
 library(shiny)
 library(tidyverse)
 library(glue)
-library(shinythemes)
 library(DT)
 library(shinydashboard)
 library(arrow)
 library(leaflet)
 library(plotly)
-
-
-#rsconnect::setAccountInfo(name='gubbz', token='52AD7AC7D8F48E11903208D7840EB69B', secret='rQVa/Gx7PLy+qtJDvCOk5jmLxjuLkXcjL5qofhiU')
 
 all_mens_data <- read_parquet('../../data/mens_open_powerlifting_full.parquet')
 all_womens_data <- read_parquet('../../data/womens_open_powerlifting_full.parquet')
